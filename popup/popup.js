@@ -126,7 +126,90 @@ async function updateSessionsList() {
   });
 }
 
-// ─── Settings ─────────────────────────────────────────────────────────────────
+
+
+const CATEGORY_LABELS = {
+  GITHUB: 'GitHub', STACKOVERFLOW: 'Stack Overflow', DOCS: 'Docs',
+  PROJECT: 'Projects', AI: 'AI Tools', OTHER: 'Other'
+};
+
+async function getCustomRules() {
+  const data = await chrome.storage.local.get('customRules');
+  return data.customRules || [];
+}
+
+async function saveCustomRules(rules) {
+  await chrome.storage.local.set({ customRules: rules });
+}
+
+async function renderRules() {
+  const rules = await getCustomRules();
+  const list = document.getElementById('rules-list');
+  const badge = document.getElementById('rules-badge');
+  if (badge) badge.textContent = rules.length;
+
+  if (rules.length === 0) {
+    list.innerHTML = '<div class="no-rules">No custom rules yet.</div>';
+    return;
+  }
+
+  list.innerHTML = '';
+  rules.forEach((rule, index) => {
+    const item = document.createElement('div');
+    item.className = 'rule-item';
+    item.innerHTML = `
+      <span class="rule-domain" title="${rule.domain}">${rule.domain}</span>
+      <span class="rule-arrow">→</span>
+      <span class="rule-category-badge badge-${rule.category}">${CATEGORY_LABELS[rule.category] || rule.category}</span>
+      <button class="btn-delete-rule" data-index="${index}" title="Delete rule">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+          <polyline points="3 6 5 6 21 6"></polyline>
+          <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+        </svg>
+      </button>
+    `;
+    list.appendChild(item);
+  });
+
+  list.querySelectorAll('.btn-delete-rule').forEach(btn => {
+    btn.addEventListener('click', async (e) => {
+      const idx = parseInt(e.currentTarget.dataset.index);
+      const rules = await getCustomRules();
+      const removed = rules.splice(idx, 1);
+      await saveCustomRules(rules);
+      showToast(`🗑️ Rule removed: "${removed[0]?.domain}"`);
+      await renderRules();
+    });
+  });
+}
+
+async function addCustomRule() {
+  const domainInput = document.getElementById('rule-domain');
+  const categorySelect = document.getElementById('rule-category');
+  const domain = domainInput.value.trim().toLowerCase();
+  const category = categorySelect.value;
+
+  if (!domain) {
+    domainInput.focus();
+    domainInput.style.borderColor = 'var(--color-red)';
+    setTimeout(() => { domainInput.style.borderColor = ''; }, 1200);
+    return;
+  }
+  if (domain.includes('://')) {
+    showToast('⚠️ Enter just the domain, not a full URL.');
+    return;
+  }
+  const rules = await getCustomRules();
+  if (rules.some(r => r.domain === domain)) {
+    showToast('⚠️ A rule for this domain already exists.');
+    return;
+  }
+  rules.push({ domain, category });
+  await saveCustomRules(rules);
+  domainInput.value = '';
+  showToast(`✅ Rule added: "${domain}" → ${CATEGORY_LABELS[category]}`);
+  await renderRules();
+}
 
 async function initSettings() {
   const data = await chrome.storage.local.get('settings');
@@ -134,18 +217,37 @@ async function initSettings() {
   toggle.checked = data.settings?.autoGrouping || false;
   toggle.addEventListener('change', async () => {
     await chrome.storage.local.set({ settings: { autoGrouping: toggle.checked } });
-    showToast(toggle.checked ? '⚡ Auto-Group enabled.' : '⏸️ Auto-Group disabled.');
+
+    if (toggle.checked) {
+      // Auto was just enabled — immediately group all already-open tabs,
+      // not just future navigations. Reuse the GROUP_ALL background handler.
+      showToast('⚡ Auto-Group enabled — grouping open tabs...');
+      chrome.runtime.sendMessage({ action: 'GROUP_ALL' }, async () => {
+        await updateTabStats();
+        showToast('✅ All tabs grouped!');
+      });
+    } else {
+      showToast('⏸️ Auto-Group disabled.');
+    }
   });
 
-  // Open settings in a new tab, not inside the popup window
-  const settingsBtn = document.getElementById('btn-settings');
-  settingsBtn.addEventListener('click', (e) => {
-    e.preventDefault();
-    const settingsUrl = chrome.runtime?.getURL
-      ? chrome.runtime.getURL('popup/settings.html')
-      : 'settings.html'; // fallback for mock/local preview
-    chrome.tabs.create({ url: settingsUrl });
-    window.close();
+  const viewport = document.querySelector('.popup-viewport');
+
+  // Gear icon → open settings panel
+  document.getElementById('btn-settings').addEventListener('click', async () => {
+    await renderRules();
+    viewport.classList.add('settings-open');
+  });
+
+  // Back button → return to main panel
+  document.getElementById('btn-back').addEventListener('click', () => {
+    viewport.classList.remove('settings-open');
+  });
+
+  // Add rule button & Enter key
+  document.getElementById('btn-add-rule').addEventListener('click', addCustomRule);
+  document.getElementById('rule-domain').addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') addCustomRule();
   });
 }
 
