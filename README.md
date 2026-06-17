@@ -134,14 +134,6 @@ DevTab Organizer runs **entirely locally** on your machine. Your tab data, sessi
 
 ---
 
-## 🗺️ Roadmap
-
-- [x] Phase 1 — Core grouping, sessions, popup UI
-- [x] Phase 2 — Search, custom rules, keyboard shortcut, auto-group, toasts
-- [ ] Phase 3 — Chrome Web Store launch, extension icons
-- [ ] Phase 4 — Cloud session sync via `chrome.storage.sync`
-
----
 
 <div align="center">
 
