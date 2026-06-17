@@ -217,7 +217,18 @@ async function initSettings() {
   toggle.checked = data.settings?.autoGrouping || false;
   toggle.addEventListener('change', async () => {
     await chrome.storage.local.set({ settings: { autoGrouping: toggle.checked } });
-    showToast(toggle.checked ? '⚡ Auto-Group enabled.' : '⏸️ Auto-Group disabled.');
+
+    if (toggle.checked) {
+      // Auto was just enabled — immediately group all already-open tabs,
+      // not just future navigations. Reuse the GROUP_ALL background handler.
+      showToast('⚡ Auto-Group enabled — grouping open tabs...');
+      chrome.runtime.sendMessage({ action: 'GROUP_ALL' }, async () => {
+        await updateTabStats();
+        showToast('✅ All tabs grouped!');
+      });
+    } else {
+      showToast('⏸️ Auto-Group disabled.');
+    }
   });
 
   const viewport = document.querySelector('.popup-viewport');
