@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DevTab Organizer — Settings</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="settings.css">
+</head>
+<body>
+  <div class="settings-container">
+
+    <!-- Header -->
+    <header class="settings-header">
+      <div class="brand">
+        <svg class="brand-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M19 4H5C3.89543 4 3 4.89543 3 6V18C3 19.1046 3.89543 20 5 20H19C20.1046 20 21 19.1046 21 18V6C21 4.89543 20.1046 4 19 4Z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
+          <path d="M3 10H21" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+          <path d="M9 4V10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+          <path d="M15 4V10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+        <div>
+          <h1>DevTab <span class="settings-badge">Settings</span></h1>
+          <p class="header-sub">Custom Domain Rules</p>
+        </div>
+      </div>
+      <a href="#" class="back-link" id="back-link">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><polyline points="15 18 9 12 15 6"></polyline></svg>
+        Back
+      </a>
+    </header>
+
+    <main class="settings-main">
+
+      <!-- Info Banner -->
+      <div class="info-banner">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16" class="info-icon"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+        <span>Custom rules are checked <strong>before</strong> built-in patterns and always take priority.</span>
+      </div>
+
+      <!-- Add Rule Form -->
+      <section class="add-rule-section">
+        <h2>Add New Rule</h2>
+        <div class="add-rule-form">
+          <div class="form-field">
+            <label for="rule-domain">Domain</label>
+            <input type="text" id="rule-domain" placeholder="e.g. my-company.atlassian.net" autocomplete="off" spellcheck="false">
+          </div>
+          <div class="form-field">
+            <label for="rule-category">Category</label>
+            <select id="rule-category">
+              <option value="GITHUB">GitHub</option>
+              <option value="STACKOVERFLOW">Stack Overflow</option>
+              <option value="DOCS">Documentation</option>
+              <option value="PROJECT" selected>Project Tools</option>
+              <option value="AI">AI Tools</option>
+              <option value="OTHER">Other</option>
+            </select>
+          </div>
+          <button id="btn-add-rule" class="btn btn-primary">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="14" height="14" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+            Add Rule
+          </button>
+        </div>
+        <p class="form-hint">Enter just the domain portion — e.g. <code>trello.com</code> or <code>my-jira.example.com</code>.</p>
+      </section>
+
+      <!-- Existing Rules List -->
+      <section class="rules-section">
+        <div class="rules-header">
+          <h2>Active Rules</h2>
+          <span class="rules-count" id="rules-count">0 rules</span>
+        </div>
+        <div class="rules-list" id="rules-list">
+          <div class="no-rules">No custom rules yet. Add one above!</div>
+        </div>
+      </section>
+
+    </main>
+
+    <!-- Toast Container -->
+    <div id="toast-container" class="toast-container"></div>
+
+  </div>
+  <script src="mock.js"></script>
+  <script type="module" src="settings.js"></script>
+</body>
+</html>

@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" width="128" height="128">
+  <defs>
+    <linearGradient id="purpleGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#7c3aed" />
+      <stop offset="100%" stop-color="#a78bfa" />
+    </linearGradient>
+    <linearGradient id="cyanGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#06b6d4" />
+      <stop offset="100%" stop-color="#22d3ee" />
+    </linearGradient>
+    <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="4" result="blur" />
+      <feComposite in="SourceGraphic" in2="blur" operator="over" />
+    </filter>
+  </defs>
+  <!-- Background Card -->
+  <rect x="8" y="8" width="112" height="112" rx="28" fill="#0f0f15" stroke="rgba(255,255,255,0.08)" stroke-width="2"/>
+  
+  <!-- Tab Group Layout Elements -->
+  <!-- Left Side: Tab Group Dots/Titles -->
+  <circle cx="38" cy="38" r="9" fill="url(#purpleGrad)" filter="url(#glow)" />
+  <circle cx="38" cy="64" r="9" fill="url(#cyanGrad)" />
+  <circle cx="38" cy="90" r="9" fill="#f97316" />
+
+  <!-- Right Side: Mock Tabs Lines -->
+  <rect x="58" y="33" width="40" height="10" rx="4" fill="rgba(255,255,255,0.15)" />
+  <rect x="58" y="59" width="48" height="10" rx="4" fill="rgba(255,255,255,0.15)" />
+  <rect x="58" y="85" width="32" height="10" rx="4" fill="rgba(255,255,255,0.15)" />
+</svg>
