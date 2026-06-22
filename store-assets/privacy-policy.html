@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Privacy Policy — DevTab Organizer</title>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root { --accent: #8b5cf6; --bg: #0a0a0f; --text: #e5e7eb; --muted: #9ca3af; --card: #1a1a26; --border: rgba(255,255,255,0.08); }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Outfit', sans-serif; background: var(--bg); color: var(--text); line-height: 1.7; }
+    .hero { background: linear-gradient(135deg, rgba(124,58,237,0.15), rgba(6,182,212,0.08)); border-bottom: 1px solid var(--border); padding: 64px 24px 48px; text-align: center; }
+    .logo { font-size: 2.4rem; font-weight: 700; background: linear-gradient(135deg, #7c3aed, #a78bfa); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 8px; }
+    .subtitle { color: var(--muted); font-size: 1rem; }
+    .badge { display: inline-block; background: rgba(139,92,246,0.15); border: 1px solid rgba(139,92,246,0.3); color: #a78bfa; padding: 4px 14px; border-radius: 99px; font-size: 0.8rem; margin-top: 12px; }
+    main { max-width: 760px; margin: 0 auto; padding: 48px 24px 80px; }
+    h2 { font-size: 1.3rem; font-weight: 700; color: #a78bfa; margin: 40px 0 12px; }
+    p, li { color: var(--muted); font-size: 0.97rem; margin-bottom: 10px; }
+    ul { padding-left: 20px; margin-bottom: 12px; }
+    li { margin-bottom: 6px; }
+    .card { background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 24px 28px; margin: 28px 0; }
+    .highlight { color: var(--text); font-weight: 600; }
+    .updated { text-align: center; color: var(--muted); font-size: 0.8rem; margin-top: 48px; border-top: 1px solid var(--border); padding-top: 24px; }
+    a { color: #a78bfa; text-decoration: none; }
+    a:hover { text-decoration: underline; }
+  </style>
+</head>
+<body>
+  <div class="hero">
+    <div class="logo">🗂️ DevTab Organizer</div>
+    <div class="subtitle">Privacy Policy</div>
+    <div class="badge">Last Updated: June 2026</div>
+  </div>
+
+  <main>
+    <div class="card">
+      <p style="color:var(--text); font-size:1.05rem;">
+        <strong>TL;DR:</strong> DevTab Organizer collects <strong>zero personal data</strong>. Everything stays on your device. We have no servers, no analytics, and make no external network requests.
+      </p>
+    </div>
+
+    <h2>1. Who We Are</h2>
+    <p>DevTab Organizer is a free, open-source Chrome Extension built for developers to organize their browser tabs. The source code is publicly available at <a href="https://github.com/kamaleshsk123/DevTab-Organizer" target="_blank">github.com/kamaleshsk123/DevTab-Organizer</a>.</p>
+
+    <h2>2. Data We Do NOT Collect</h2>
+    <p>We do not collect, transmit, sell, or share any of the following:</p>
+    <ul>
+      <li>Your browsing history or visited URLs</li>
+      <li>Tab titles or page content</li>
+      <li>Personally identifiable information (name, email, IP address)</li>
+      <li>Usage analytics or telemetry</li>
+      <li>Crash reports or diagnostic data</li>
+    </ul>
+
+    <h2>3. Data Stored Locally on Your Device</h2>
+    <p>DevTab Organizer stores the following data <span class="highlight">exclusively on your local device</span> using the Chrome <code>storage.local</code> API:</p>
+    <ul>
+      <li><strong>Saved Sessions</strong> — Names, tab URLs, and group configurations you explicitly save.</li>
+      <li><strong>Custom Domain Rules</strong> — Domain-to-category mappings you define in the settings panel.</li>
+      <li><strong>Extension Settings</strong> — Your Auto-Group toggle preference.</li>
+    </ul>
+    <p>This data never leaves your browser. It is not synced to any server and is not accessible to us or any third party.</p>
+
+    <h2>4. Permissions Explained</h2>
+    <ul>
+      <li><strong><code>tabs</code></strong> — Required to read tab URLs and titles to categorize them for grouping. We only access tab data when you actively use the extension.</li>
+      <li><strong><code>tabGroups</code></strong> — Required to create, update, and manage native Chrome Tab Groups.</li>
+      <li><strong><code>storage</code></strong> — Required to save your sessions, settings, and custom rules locally on your device.</li>
+    </ul>
+
+    <h2>5. Third-Party Services</h2>
+    <p>DevTab Organizer makes <span class="highlight">no external network requests</span>. We do not use any third-party SDKs, analytics platforms, or advertising networks. The extension loads Google Fonts (Outfit) in the popup UI, which is a standard browser resource request subject to <a href="https://policies.google.com/privacy" target="_blank">Google's Privacy Policy</a>.</p>
+
+    <h2>6. Children's Privacy</h2>
+    <p>Our extension does not collect any data from any users, including children under the age of 13.</p>
+
+    <h2>7. Changes to This Policy</h2>
+    <p>If we make material changes to this privacy policy, we will update the "Last Updated" date above and publish the new policy to this page and the GitHub repository.</p>
+
+    <h2>8. Contact</h2>
+    <p>If you have any questions about this privacy policy, please open an issue on our <a href="https://github.com/kamaleshsk123/DevTab-Organizer/issues" target="_blank">GitHub repository</a>.</p>
+
+    <div class="updated">
+      DevTab Organizer Privacy Policy · June 2026 · <a href="https://github.com/kamaleshsk123/DevTab-Organizer">Open Source on GitHub</a>
+    </div>
+  </main>
+</body>
+</html>
