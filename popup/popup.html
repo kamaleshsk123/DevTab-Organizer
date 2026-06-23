@@ -126,10 +126,26 @@
           </div>
         </header>
 
-        <!-- Info Banner -->
-        <div class="info-banner">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="13" height="13" style="flex-shrink:0;color:#a78bfa"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
-          <span>Custom rules take priority over built-in patterns.</span>
+        <!-- Theme & Info Banner -->
+        <div class="settings-theme-row" style="display: flex; gap: 10px; margin-bottom: 16px; align-items: flex-end;">
+          <div class="form-field form-field--narrow" style="flex-shrink: 0; min-width: 130px;">
+            <label>Theme</label>
+            <div class="custom-select" id="theme-select" data-value="system">
+              <div class="custom-select-trigger">
+                <span class="custom-select-trigger-text">System Default</span>
+                <svg class="chevron-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="10" height="10"><polyline points="6 9 12 15 18 9"></polyline></svg>
+              </div>
+              <div class="custom-select-options">
+                <div class="custom-select-option selected" data-value="system">System Default</div>
+                <div class="custom-select-option" data-value="dark">Dark Mode</div>
+                <div class="custom-select-option" data-value="light">Light Mode</div>
+              </div>
+            </div>
+          </div>
+          <div class="info-banner" style="flex: 1; margin: 0;">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="13" height="13" style="flex-shrink:0;color:#a78bfa"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+            <span>Custom rules take priority over built-in patterns.</span>
+          </div>
         </div>
 
         <!-- Add Rule Form -->
@@ -140,15 +156,21 @@
               <input type="text" id="rule-domain" placeholder="e.g. my-company.atlassian.net" autocomplete="off" spellcheck="false">
             </div>
             <div class="form-field form-field--narrow">
-              <label for="rule-category">Category</label>
-              <select id="rule-category">
-                <option value="GITHUB">GitHub</option>
-                <option value="STACKOVERFLOW">Stack Overflow</option>
-                <option value="DOCS">Docs</option>
-                <option value="PROJECT" selected>Projects</option>
-                <option value="AI">AI Tools</option>
-                <option value="OTHER">Other</option>
-              </select>
+              <label>Category</label>
+              <div class="custom-select" id="rule-category-select" data-value="PROJECT">
+                <div class="custom-select-trigger">
+                  <span class="custom-select-trigger-text">Projects</span>
+                  <svg class="chevron-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="10" height="10"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                </div>
+                <div class="custom-select-options">
+                  <div class="custom-select-option" data-value="GITHUB">GitHub</div>
+                  <div class="custom-select-option" data-value="STACKOVERFLOW">Stack Overflow</div>
+                  <div class="custom-select-option" data-value="DOCS">Docs</div>
+                  <div class="custom-select-option selected" data-value="PROJECT">Projects</div>
+                  <div class="custom-select-option" data-value="AI">AI Tools</div>
+                  <div class="custom-select-option" data-value="OTHER">Other</div>
+                </div>
+              </div>
             </div>
             <button id="btn-add-rule" class="btn btn-primary btn-add">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="13" height="13" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
