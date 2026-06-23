@@ -1,3 +1,11 @@
+// -- Immediately load theme to prevent Flash of Unstyled Content (FOUC) --
+chrome.storage.local.get('settings', (data) => {
+  const currentTheme = data.settings?.theme || 'system';
+  if (currentTheme !== 'system') {
+    document.documentElement.setAttribute('data-theme', currentTheme);
+  }
+});
+
 import { TAB_TYPES } from '../utils/constants.js';
 import { detectTabType } from '../utils/tabDetector.js';
 import { getSessions, saveSession, deleteSession, restoreSession } from '../utils/sessionManager.js';
@@ -185,9 +193,9 @@ async function renderRules() {
 
 async function addCustomRule() {
   const domainInput = document.getElementById('rule-domain');
-  const categorySelect = document.getElementById('rule-category');
+  const categorySelect = document.getElementById('rule-category-select');
   const domain = domainInput.value.trim().toLowerCase();
-  const category = categorySelect.value;
+  const category = categorySelect.getAttribute('data-value');
 
   if (!domain) {
     domainInput.focus();
@@ -207,12 +215,35 @@ async function addCustomRule() {
   rules.push({ domain, category });
   await saveCustomRules(rules);
   domainInput.value = '';
+  setCustomSelectValue(categorySelect, 'PROJECT');
   showToast(`✅ Rule added: "${domain}" → ${CATEGORY_LABELS[category]}`);
   await renderRules();
 }
 
 async function initSettings() {
   const data = await chrome.storage.local.get('settings');
+  
+  // -- Theme Init --
+  const themeSelector = document.getElementById('theme-select');
+  const currentTheme = data.settings?.theme || 'system';
+  setCustomSelectValue(themeSelector, currentTheme);
+  if (currentTheme !== 'system') {
+    document.documentElement.setAttribute('data-theme', currentTheme);
+  }
+
+  themeSelector.addEventListener('change', async (e) => {
+    const newTheme = e.detail.value;
+    if (newTheme === 'system') {
+      document.documentElement.removeAttribute('data-theme');
+    } else {
+      document.documentElement.setAttribute('data-theme', newTheme);
+    }
+    const currentData = await chrome.storage.local.get('settings');
+    const newSettings = { ...currentData.settings, theme: newTheme };
+    await chrome.storage.local.set({ settings: newSettings });
+  });
+
+  // -- Auto-Group Toggle Init --
   const toggle = document.getElementById('auto-group-toggle');
   toggle.checked = data.settings?.autoGrouping || false;
   toggle.addEventListener('change', async () => {
@@ -405,9 +436,65 @@ function bindEvents() {
   });
 }
 
+// ─── Custom Select Component ──────────────────────────────────────────────────
+
+function setupCustomSelects() {
+  const customSelects = document.querySelectorAll('.custom-select');
+
+  customSelects.forEach(select => {
+    const trigger = select.querySelector('.custom-select-trigger');
+    const triggerText = select.querySelector('.custom-select-trigger-text');
+    const options = select.querySelectorAll('.custom-select-option');
+
+    trigger.addEventListener('click', (e) => {
+      e.stopPropagation();
+      customSelects.forEach(other => {
+        if (other !== select) other.classList.remove('open');
+      });
+      select.classList.toggle('open');
+    });
+
+    options.forEach(option => {
+      option.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const value = option.getAttribute('data-value');
+        const label = option.textContent;
+
+        options.forEach(opt => opt.classList.remove('selected'));
+        option.classList.add('selected');
+
+        select.setAttribute('data-value', value);
+        triggerText.textContent = label;
+        select.classList.remove('open');
+
+        const event = new CustomEvent('change', { detail: { value } });
+        select.dispatchEvent(event);
+      });
+    });
+  });
+
+  document.addEventListener('click', () => {
+    customSelects.forEach(select => select.classList.remove('open'));
+  });
+}
+
+function setCustomSelectValue(selectEl, value) {
+  selectEl.setAttribute('data-value', value);
+  const option = selectEl.querySelector(`.custom-select-option[data-value="${value}"]`);
+  const triggerText = selectEl.querySelector(`.custom-select-trigger-text`);
+  const options = selectEl.querySelectorAll('.custom-select-option');
+  
+  options.forEach(opt => opt.classList.remove('selected'));
+  if (option) {
+    option.classList.add('selected');
+    triggerText.textContent = option.textContent;
+  }
+}
+
 // ─── Init ─────────────────────────────────────────────────────────────────────
 
 document.addEventListener('DOMContentLoaded', async () => {
+  setupCustomSelects();
   await updateTabStats();
   await updateSessionsList();
   await initSettings();
