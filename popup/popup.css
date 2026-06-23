@@ -270,7 +270,7 @@ input:checked + .slider:before { transform: translateX(16px); }
   position: absolute;
   top: calc(100% + 6px);
   left: 0; right: 0;
-  background: rgba(20, 20, 32, 0.98);
+  background: var(--bg-toast);
   border: 1px solid var(--border-color);
   border-radius: 14px;
   overflow: hidden;
@@ -301,7 +301,10 @@ input:checked + .slider:before { transform: translateX(16px); }
 
 .search-result-item:last-child { border-bottom: none; }
 
-.search-result-item:hover { background: rgba(139, 92, 246, 0.1); }
+.search-result-item:hover,
+.search-result-item.keyboard-selected { 
+  background: rgba(139, 92, 246, 0.15); 
+}
 
 .search-result-favicon {
   width: 14px; height: 14px;

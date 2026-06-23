@@ -22,12 +22,15 @@ function shouldSkipUrl(url) {
 async function groupAllTabs(windowId) {
   const tabs = await chrome.tabs.query({ windowId, pinned: false });
   const customRules = await getCustomRules();
+  const settingsData = await chrome.storage.local.get('settings');
+  const groupOther = settingsData.settings?.groupOther !== false;
 
   // Accumulate tabs per category key
   const categoryToTabs = {};
   for (const tab of tabs) {
     if (shouldSkipUrl(tab.url)) continue;
     const category = detectTabType(tab.url, customRules);
+    if (category === 'OTHER' && !groupOther) continue;
     if (!categoryToTabs[category]) categoryToTabs[category] = [];
     categoryToTabs[category].push(tab);
   }
@@ -94,6 +97,9 @@ chrome.tabs.onUpdated.addListener(async (tabId, changeInfo, tab) => {
     const categoryKey = detectTabType(tab.url, customRules);
     const typeDef = TAB_TYPES[categoryKey];
     if (!typeDef) return;
+
+    const groupOther = data.settings?.groupOther !== false;
+    if (categoryKey === 'OTHER' && !groupOther) return;
 
     // Skip if already in the correct group
     if (tab.groupId !== chrome.tabGroups.TAB_GROUP_ID_NONE) {

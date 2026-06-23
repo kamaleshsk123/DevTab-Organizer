@@ -247,11 +247,11 @@ async function initSettings() {
   const toggle = document.getElementById('auto-group-toggle');
   toggle.checked = data.settings?.autoGrouping || false;
   toggle.addEventListener('change', async () => {
-    await chrome.storage.local.set({ settings: { autoGrouping: toggle.checked } });
+    const currentData = await chrome.storage.local.get('settings');
+    const newSettings = { ...currentData.settings, autoGrouping: toggle.checked };
+    await chrome.storage.local.set({ settings: newSettings });
 
     if (toggle.checked) {
-      // Auto was just enabled — immediately group all already-open tabs,
-      // not just future navigations. Reuse the GROUP_ALL background handler.
       showToast('⚡ Auto-Group enabled — grouping open tabs...');
       chrome.runtime.sendMessage({ action: 'GROUP_ALL' }, async () => {
         await updateTabStats();
@@ -259,6 +259,30 @@ async function initSettings() {
       });
     } else {
       showToast('⏸️ Auto-Group disabled.');
+    }
+  });
+
+  // -- Group Other Toggle Init --
+  const groupOtherToggle = document.getElementById('group-other-toggle');
+  groupOtherToggle.checked = data.settings?.groupOther !== false;
+  groupOtherToggle.addEventListener('change', async () => {
+    const currentData = await chrome.storage.local.get('settings');
+    const newSettings = { ...currentData.settings, groupOther: groupOtherToggle.checked };
+    await chrome.storage.local.set({ settings: newSettings });
+    showToast(groupOtherToggle.checked ? '📁 Grouping "Other" tabs enabled.' : '📂 Grouping "Other" tabs disabled.');
+  });
+
+  // -- Export / Import Bindings --
+  document.getElementById('btn-export-sessions').addEventListener('click', exportSessions);
+  
+  const importBtn = document.getElementById('btn-import-sessions');
+  const importInput = document.getElementById('import-file-input');
+  importBtn.addEventListener('click', () => importInput.click());
+  importInput.addEventListener('change', (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      handleSessionsImport(file);
+      importInput.value = ''; // clear input
     }
   });
 
@@ -282,6 +306,84 @@ async function initSettings() {
   });
 }
 
+// ---- Backup & Restore Helpers ----
+
+async function exportSessions() {
+  try {
+    const data = await chrome.storage.local.get('sessions');
+    const sessions = data.sessions || [];
+    if (sessions.length === 0) {
+      showToast('⚠️ No saved sessions to export.');
+      return;
+    }
+    const blob = new Blob([JSON.stringify(sessions, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const dateStr = new Date().toISOString().slice(0, 10);
+    
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `devtab-sessions-backup-${dateStr}.json`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    
+    showToast('📤 Sessions exported successfully!');
+  } catch (err) {
+    console.error(err);
+    showToast('❌ Export failed.');
+  }
+}
+
+async function handleSessionsImport(file) {
+  const reader = new FileReader();
+  reader.onload = async (e) => {
+    try {
+      const imported = JSON.parse(e.target.result);
+      if (!Array.isArray(imported)) {
+        showToast('❌ Invalid file format.');
+        return;
+      }
+
+      const isValid = imported.every(s => 
+        s && typeof s === 'object' && 
+        typeof s.name === 'string' &&
+        Array.isArray(s.groups) &&
+        Array.isArray(s.ungrouped)
+      );
+
+      if (!isValid) {
+        showToast('❌ Invalid session schema.');
+        return;
+      }
+
+      const data = await chrome.storage.local.get('sessions');
+      const current = data.sessions || [];
+      
+      let newCount = 0;
+      for (const session of imported) {
+        if (!current.some(c => c.savedAt === session.savedAt && c.name === session.name)) {
+          current.push(session);
+          newCount++;
+        }
+      }
+
+      if (newCount === 0) {
+        showToast('ℹ️ Sessions are already imported.');
+        return;
+      }
+
+      await chrome.storage.local.set({ sessions: current });
+      await updateSessionsList();
+      showToast(`📥 Imported ${newCount} session${newCount !== 1 ? 's' : ''}!`);
+    } catch (err) {
+      console.error(err);
+      showToast('❌ Import failed: Invalid JSON.');
+    }
+  };
+  reader.readAsText(file);
+}
+
 // ─── Search ───────────────────────────────────────────────────────────────────
 
 function highlightMatch(text, query) {
@@ -299,14 +401,30 @@ function initSearch() {
   const input = document.getElementById('search-input');
   const clearBtn = document.getElementById('search-clear');
   const resultsEl = document.getElementById('search-results');
+  let selectedIndex = -1;
+  let currentTabs = [];
+
+  function updateActiveSelection() {
+    const items = resultsEl.querySelectorAll('.search-result-item');
+    items.forEach((item, idx) => {
+      if (idx === selectedIndex) {
+        item.classList.add('keyboard-selected');
+        item.scrollIntoView({ block: 'nearest' });
+      } else {
+        item.classList.remove('keyboard-selected');
+      }
+    });
+  }
 
   input.addEventListener('input', async () => {
     const query = input.value.trim();
     clearBtn.style.display = query ? 'flex' : 'none';
+    selectedIndex = -1;
 
     if (!query) {
       resultsEl.style.display = 'none';
       resultsEl.innerHTML = '';
+      currentTabs = [];
       return;
     }
 
@@ -323,13 +441,14 @@ function initSearch() {
 
     resultsEl.innerHTML = '';
     resultsEl.style.display = 'block';
+    currentTabs = filtered.slice(0, 10);
 
-    if (filtered.length === 0) {
+    if (currentTabs.length === 0) {
       resultsEl.innerHTML = '<div class="search-no-results">No matching tabs found.</div>';
       return;
     }
 
-    filtered.slice(0, 10).forEach(tab => {
+    currentTabs.forEach((tab, index) => {
       const item = document.createElement('div');
       item.className = 'search-result-item';
 
@@ -364,16 +483,42 @@ function initSearch() {
     clearBtn.style.display = 'none';
     resultsEl.style.display = 'none';
     resultsEl.innerHTML = '';
+    currentTabs = [];
+    selectedIndex = -1;
     input.focus();
   });
 
-  // Close results on Escape
-  input.addEventListener('keydown', (e) => {
+  // Handle key navigation
+  input.addEventListener('keydown', async (e) => {
     if (e.key === 'Escape') {
       input.value = '';
       clearBtn.style.display = 'none';
       resultsEl.style.display = 'none';
       resultsEl.innerHTML = '';
+      currentTabs = [];
+      selectedIndex = -1;
+      return;
+    }
+
+    if (currentTabs.length === 0) return;
+
+    if (e.key === 'ArrowDown') {
+      e.preventDefault();
+      selectedIndex = (selectedIndex + 1) % currentTabs.length;
+      updateActiveSelection();
+    } else if (e.key === 'ArrowUp') {
+      e.preventDefault();
+      selectedIndex = (selectedIndex - 1 + currentTabs.length) % currentTabs.length;
+      updateActiveSelection();
+    } else if (e.key === 'Enter') {
+      e.preventDefault();
+      const targetIndex = selectedIndex >= 0 ? selectedIndex : 0;
+      const tab = currentTabs[targetIndex];
+      if (tab) {
+        await chrome.windows.update(tab.windowId, { focused: true });
+        await chrome.tabs.update(tab.id, { active: true });
+        window.close();
+      }
     }
   });
 
@@ -434,6 +579,44 @@ function bindEvents() {
   document.getElementById('session-name-input').addEventListener('keydown', (e) => {
     if (e.key === 'Enter') saveBtn.click();
   });
+
+  // Clean duplicate tabs binding
+  document.getElementById('btn-clean-duplicates').addEventListener('click', cleanDuplicateTabs);
+}
+
+// ---- Deduplication Helper ----
+
+async function cleanDuplicateTabs() {
+  const tabs = await chrome.tabs.query({ currentWindow: true, pinned: false });
+  const urlToTabs = {};
+  for (const tab of tabs) {
+    if (!tab.url) continue;
+    if (!urlToTabs[tab.url]) urlToTabs[tab.url] = [];
+    urlToTabs[tab.url].push(tab);
+  }
+
+  const tabIdsToRemove = [];
+  for (const [url, tabList] of Object.entries(urlToTabs)) {
+    if (tabList.length <= 1) continue;
+    
+    tabList.sort((a, b) => {
+      if (a.active) return -1;
+      if (b.active) return 1;
+      return a.index - b.index;
+    });
+
+    const tabsToRemove = tabList.slice(1);
+    tabIdsToRemove.push(...tabsToRemove.map(t => t.id));
+  }
+
+  if (tabIdsToRemove.length === 0) {
+    showToast('🧹 No duplicate tabs found.');
+    return;
+  }
+
+  await Promise.all(tabIdsToRemove.map(id => chrome.tabs.remove(id)));
+  showToast(`🧹 Closed ${tabIdsToRemove.length} duplicate tab${tabIdsToRemove.length !== 1 ? 's' : ''}!`);
+  await updateTabStats();
 }
 
 // ─── Custom Select Component ──────────────────────────────────────────────────
