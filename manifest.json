@@ -37,5 +37,8 @@
       },
       "description": "Group all tabs by category"
     }
+  },
+  "omnibox": {
+    "keyword": "dt"
   }
 }

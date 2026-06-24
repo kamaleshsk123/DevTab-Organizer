@@ -582,6 +582,43 @@ function bindEvents() {
 
   // Clean duplicate tabs binding
   document.getElementById('btn-clean-duplicates').addEventListener('click', cleanDuplicateTabs);
+
+  // Merge Windows binding
+  document.getElementById('btn-merge-windows').addEventListener('click', mergeAllWindows);
+}
+
+// ---- Merge Windows Helper ----
+
+async function mergeAllWindows() {
+  const btn = document.getElementById('btn-merge-windows');
+  btn.disabled = true;
+  
+  try {
+    const currentWindow = await chrome.windows.getCurrent();
+    const allTabs = await chrome.tabs.query({ pinned: false });
+    
+    const tabsToMove = allTabs.filter(t => t.windowId !== currentWindow.id);
+    
+    if (tabsToMove.length === 0) {
+      showToast('ℹ️ No other windows to merge.');
+      btn.disabled = false;
+      return;
+    }
+    
+    const tabIds = tabsToMove.map(t => t.id);
+    await chrome.tabs.move(tabIds, { windowId: currentWindow.id, index: -1 });
+    
+    showToast(`🔀 Merged ${tabsToMove.length} tabs into this window!`);
+    
+    chrome.runtime.sendMessage({ action: 'GROUP_ALL' }, async () => {
+      await updateTabStats();
+      btn.disabled = false;
+    });
+  } catch (err) {
+    console.error(err);
+    showToast('❌ Merge failed.');
+    btn.disabled = false;
+  }
 }
 
 // ---- Deduplication Helper ----

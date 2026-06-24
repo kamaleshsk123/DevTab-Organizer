@@ -144,4 +144,54 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     return true; // Keep async channel open
   }
 });
+// ----- Omnibox Integration -----
 
+function escapeXml(unsafe) {
+  if (!unsafe) return '';
+  return unsafe.replace(/[<>&'"]/g, function (c) {
+      switch (c) {
+          case '<': return '&lt;';
+          case '>': return '&gt;';
+          case '&': return '&amp;';
+          case '\'': return '&apos;';
+          case '"': return '&quot;';
+      }
+  });
+}
+
+chrome.omnibox.onInputChanged.addListener(async (text, suggest) => {
+  const query = text.toLowerCase();
+  const tabs = await chrome.tabs.query({});
+  
+  const suggestions = [];
+  for (const tab of tabs) {
+    if (tab.title?.toLowerCase().includes(query) || tab.url?.toLowerCase().includes(query)) {
+      suggestions.push({
+        content: `tab:${tab.id}:${tab.windowId}`,
+        description: `<url>${escapeXml(tab.title || 'Untitled')}</url> - <dim>${escapeXml(tab.url)}</dim>`
+      });
+    }
+  }
+  suggest(suggestions.slice(0, 5));
+});
+
+chrome.omnibox.onInputEntered.addListener(async (text) => {
+  if (text.startsWith('tab:')) {
+    const parts = text.split(':');
+    const tabId = parseInt(parts[1], 10);
+    const windowId = parseInt(parts[2], 10);
+    if (tabId && windowId) {
+      await chrome.windows.update(windowId, { focused: true });
+      await chrome.tabs.update(tabId, { active: true });
+    }
+  } else {
+    // If they just hit enter on the query itself, maybe focus the first match?
+    const query = text.toLowerCase();
+    const tabs = await chrome.tabs.query({});
+    const match = tabs.find(t => t.title?.toLowerCase().includes(query) || t.url?.toLowerCase().includes(query));
+    if (match) {
+      await chrome.windows.update(match.windowId, { focused: true });
+      await chrome.tabs.update(match.id, { active: true });
+    }
+  }
+});

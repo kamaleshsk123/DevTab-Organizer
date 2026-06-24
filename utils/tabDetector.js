@@ -23,8 +23,15 @@ export function detectTabType(url, customRules = []) {
   for (const rule of customRules) {
     if (!rule.domain || !rule.category) continue;
     const normalizedDomain = rule.domain.toLowerCase().trim();
-    if (host.includes(normalizedDomain)) {
-      return rule.category; // e.g. 'PROJECT', 'DOCS', etc.
+    
+    if (normalizedDomain.includes('*')) {
+      const regexStr = '^' + normalizedDomain.replace(/\./g, '\\.').replace(/\*/g, '.*') + '$';
+      const regex = new RegExp(regexStr);
+      if (regex.test(host)) return rule.category;
+    } else {
+      if (host.includes(normalizedDomain)) {
+        return rule.category;
+      }
     }
   }
 
