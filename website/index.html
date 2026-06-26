@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Privacy Policy - DevTab Organizer</title>
+  
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  
+  <!-- Tailwind CSS via CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- Tailwind Config -->
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Outfit', 'sans-serif'],
+          },
+          colors: {
+            brand: {
+              400: '#a78bfa',
+              500: '#8b5cf6',
+              600: '#7c3aed',
+            }
+          }
+        }
+      }
+    }
+  </script>
+  
+  <style>
+    body {
+      background-color: #0a0a0f;
+      background-image: 
+        radial-gradient(circle at 15% 50%, rgba(124, 58, 237, 0.08) 0%, transparent 50%),
+        radial-gradient(circle at 85% 30%, rgba(6, 182, 212, 0.08) 0%, transparent 50%);
+      background-attachment: fixed;
+    }
+    .glass-card {
+      background: rgba(30, 30, 46, 0.6);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+    }
+    .gradient-text {
+      background: linear-gradient(135deg, #a78bfa, #3b82f6);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+  </style>
+</head>
+<body class="text-gray-200 antialiased min-h-screen flex flex-col">
+
+  <!-- Header -->
+  <header class="w-full py-6 px-6 sm:px-12 flex items-center justify-between border-b border-gray-800 border-opacity-50 glass-card sticky top-0 z-50">
+    <div class="flex items-center gap-3">
+      <!-- App Icon SVG -->
+      <svg class="w-8 h-8 text-brand-400 drop-shadow-md" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M19 4H5C3.89543 4 3 4.89543 3 6V18C3 19.1046 3.89543 20 5 20H19C20.1046 20 21 19.1046 21 18V6C21 4.89543 20.1046 4 19 4Z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
+        <path d="M3 10H21" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        <path d="M9 4V10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        <path d="M15 4V10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+      </svg>
+      <h1 class="text-xl font-bold tracking-tight text-white">DevTab <span class="font-light text-gray-400">Organizer</span></h1>
+    </div>
+    <a href="https://chrome.google.com/webstore" class="text-sm font-medium text-brand-400 hover:text-brand-300 transition-colors">Get Extension</a>
+  </header>
+
+  <!-- Main Content -->
+  <main class="flex-grow max-w-4xl w-full mx-auto px-6 py-12 sm:py-20">
+    
+    <div class="text-center mb-16">
+      <h2 class="text-4xl sm:text-5xl font-bold mb-4 gradient-text">Privacy Policy</h2>
+      <p class="text-gray-400 text-lg">Last Updated: June 26, 2026</p>
+    </div>
+
+    <div class="glass-card rounded-2xl p-8 sm:p-12 space-y-10 leading-relaxed">
+      
+      <!-- Intro -->
+      <section>
+        <p class="text-gray-300 text-lg">
+          DevTab Organizer ("the Extension") respects your privacy and is committed to protecting it. This Privacy Policy explains what information the Extension accesses, how it is used, and how it is protected. Our core philosophy is simple: <strong>your data belongs to you, and it never leaves your machine.</strong>
+        </p>
+      </section>
+
+      <!-- Section 1 -->
+      <section>
+        <div class="flex items-center gap-3 mb-4">
+          <div class="w-8 h-8 rounded-full bg-brand-500 bg-opacity-20 flex items-center justify-center text-brand-400 font-bold border border-brand-500 border-opacity-30">1</div>
+          <h3 class="text-2xl font-semibold text-white">Information We Access</h3>
+        </div>
+        <p class="text-gray-400 pl-11">
+          To function properly, DevTab Organizer requests the <code>tabs</code> and <code>tabGroups</code> permissions from your browser. The Extension accesses the URLs and titles of the tabs currently open in your browser to categorize them accurately.
+        </p>
+      </section>
+
+      <!-- Section 2 -->
+      <section>
+        <div class="flex items-center gap-3 mb-4">
+          <div class="w-8 h-8 rounded-full bg-blue-500 bg-opacity-20 flex items-center justify-center text-blue-400 font-bold border border-blue-500 border-opacity-30">2</div>
+          <h3 class="text-2xl font-semibold text-white">How Information is Used</h3>
+        </div>
+        <p class="text-gray-400 pl-11 mb-3">The accessed tab data (URLs and titles) is used exclusively for the core functionality of the Extension:</p>
+        <ul class="list-disc pl-16 space-y-2 text-gray-400">
+          <li>Automatically categorizing and grouping your open tabs based on domains.</li>
+          <li>Allowing you to search across your open tabs within the extension popup.</li>
+          <li>Allowing you to save and restore tab sessions.</li>
+        </ul>
+      </section>
+
+      <!-- Section 3 -->
+      <section>
+        <div class="flex items-center gap-3 mb-4">
+          <div class="w-8 h-8 rounded-full bg-green-500 bg-opacity-20 flex items-center justify-center text-green-400 font-bold border border-green-500 border-opacity-30">3</div>
+          <h3 class="text-2xl font-semibold text-white">Zero Data Collection</h3>
+        </div>
+        <p class="text-gray-400 pl-11">
+          DevTab Organizer operates <strong>100% locally</strong> on your machine. <br><br>
+          <strong>No External Servers:</strong> The Extension does NOT transmit, upload, or send your tab data, browsing history, or any other personal information to external servers.<br><br>
+          <strong>Local Storage:</strong> All user preferences, custom domain rules, and saved tab sessions are stored securely in your browser's local storage via the Chrome Storage API.
+        </p>
+      </section>
+
+      <!-- Section 4 -->
+      <section>
+        <div class="flex items-center gap-3 mb-4">
+          <div class="w-8 h-8 rounded-full bg-orange-500 bg-opacity-20 flex items-center justify-center text-orange-400 font-bold border border-orange-500 border-opacity-30">4</div>
+          <h3 class="text-2xl font-semibold text-white">Sharing of Information</h3>
+        </div>
+        <p class="text-gray-400 pl-11">
+          Because we do not collect or transmit your data to any servers, we do not (and cannot) share, sell, or trade your data with any third parties. Your data is entirely yours.
+        </p>
+      </section>
+
+      <!-- Section 5 -->
+      <section>
+        <div class="flex items-center gap-3 mb-4">
+          <div class="w-8 h-8 rounded-full bg-pink-500 bg-opacity-20 flex items-center justify-center text-pink-400 font-bold border border-pink-500 border-opacity-30">5</div>
+          <h3 class="text-2xl font-semibold text-white">Contact Us</h3>
+        </div>
+        <p class="text-gray-400 pl-11">
+          If you have any questions about this Privacy Policy or how your data is handled, please reach out to us by submitting an issue on our GitHub repository or via the Chrome Web Store support tab.
+        </p>
+      </section>
+
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="w-full py-8 text-center text-gray-500 border-t border-gray-800 border-opacity-50 mt-auto">
+    <p>&copy; 2026 DevTab Organizer. All rights reserved.</p>
+  </footer>
+
+</body>
+</html>
